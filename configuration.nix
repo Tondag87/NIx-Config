@@ -92,9 +92,9 @@
   };
  
 
-  users.users.wick3d = {
+  users.users.<user> = { # Your Username Goes Here
     isNormalUser = true;
-    description = "Anthony Abaray";
+    Description = Real Name # Your Real Name Here
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [];
