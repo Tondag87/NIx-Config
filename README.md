@@ -1,2 +1,2 @@
-# NIx-Config
+# Nix-Config
 Going to NixOS
