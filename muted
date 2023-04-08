@@ -1,3 +1,0 @@
-#!/bin/sh 
-msgID="2345"
-dunstify "󰝟  Muted" -t 800 -r $msgID
