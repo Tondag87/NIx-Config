@@ -23,7 +23,7 @@
   };
 
   networking = {
-    hostName = "nixos";
+    hostName = "hostname";
     networkmanager.enable = true;
   };
 
@@ -94,9 +94,9 @@
   };
  
 
-  users.users.wick3d = {
+  users.users.username = {
     isNormalUser = true;
-    description = "Anthony Abaray";
+    description = "Real Name";
     extraGroups = [ "networkmanager" "wheel" "libvirtd"];
     shell = pkgs.zsh;
     packages = with pkgs; [];
