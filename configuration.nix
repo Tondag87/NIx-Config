@@ -13,7 +13,7 @@
         };
 	efi = {
 	  canTouchEfiVariables = true;
-	  efiSysMountPoint = "/boot/efi";
+	  efiSysMountPoint = "/boot";
 	};
     };
     initrd = {
@@ -23,7 +23,7 @@
   };
 
   networking = {
-    hostName = "hostname";
+    hostName = "NixOS";
     networkmanager.enable = true;
   };
 
@@ -31,9 +31,7 @@
 
   nixpkgs = {
     config = {
-    	permittedInsecurePackages = [
-    		"python-2.7.18.6"
-    	];
+	permittedInsecurePackages = [ "python-2.7.18.6" ];
 	packageOverrides = pkgs: {
 		nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
       		inherit pkgs;
@@ -48,21 +46,32 @@
 	enable = true;
     	layout = "us";
     	xkbVariant = "";
-    	displayManager.gdm.enable = true;
-    	desktopManager.gnome.enable = true;
-    	windowManager.bspwm.enable = true;
+      displayManager.gdm.enable = true;
+      displayManager.gdm.wayland = true;
+      desktopManager.gnome.enable = true;
     	videoDrivers = [ "amdgpu" "radeon" ];
+    };
+    pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
     };
     flatpak = {
     	enable = true;
+    };
+  };
+  xdg = {
+    portal = {
+      enable = true;
     };
   };
 
   hardware = {
     cpu.amd.updateMicrocode = true;
     enableRedistributableFirmware = true;
-    pulseaudio.enable = true;
     opengl.enable = true;
+    pulseaudio.enable = false;
     opengl.driSupport = true;
     opengl.driSupport32Bit = true;
   };
@@ -71,9 +80,10 @@
    zsh.enable = true;
    steam.enable = true;
    dconf.enable = true;
+   hyprland.enable = true;
+   hyprland.xwayland.enable = true;
   };
    
-  sound.enable = true;
   virtualisation.libvirtd.enable = true;
 
   fonts.fonts = with pkgs; [ nerdfonts ];
@@ -92,74 +102,86 @@
     	LC_TIME = "en_US.UTF-8";
     };
   };
- 
+  security = {
+    pam.services.swaylock = {
+        text = ''
+          auth include login
+        '';
+      };
+    rtkit.enable = true;
+  };
 
-  users.users.username = {
+  users.users.wick3d = {
     isNormalUser = true;
-    description = "Real Name";
+    description = "Anthony A";
     extraGroups = [ "networkmanager" "wheel" "libvirtd"];
     shell = pkgs.zsh;
     packages = with pkgs; [];
   };
-  environment.systemPackages = with pkgs; [
-    wget
-    neovim
-    neofetch
-    brave
-    tmux
-    git
-    feh
-    nur.repos.reedrw.picom-next-ibhagwan
-    bspwm
-    sxhkd
-    kitty
-    zsh
-    polybar
-    rofi
-    ranger
-    pavucontrol
-    killall
-    xclip
-    lxappearance
-    unzip
-    bitwarden
-    gcc
-    xfce.thunar
-    caffeine-ng
+
+   environment.systemPackages = with pkgs; [
+    betterdiscordctl
     betterlockscreen
+    bitwarden
+    brave
+    btop
+    caffeine-ng
+    calcurse
+    cargo
+    discord
     dunst
     exa
-    pfetch
-    playerctl
-    spotify
-    btop
-    pamixer
-    scrot
+    feh
+    firefox
+    gcc
+    git
+    gnumake
+    home-manager
+    killall
+    kitty
+    libdrm
     libnotify
+    libratbag
+    libreoffice-fresh
+    lutris
+    lxappearance
+    neofetch
+    neovim
+    nodePackages.pyright
+    nodePackages.vscode-langservers-extracted
+    nodePackages_latest.live-server
+    nodePackages_latest.vim-language-server
     nodejs
+    nur.repos.reedrw.picom-next-ibhagwan
+    pamixer
+    pavucontrol
+    pcmanfm
+    piper
+    playerctl
     python
-    python311
+    python310Packages.pylsp-mypy
     python310Packages.pynvim
     python310Packages.python-lsp-server
-    python310Packages.pylsp-mypy
-    nodePackages.pyright
-    nodePackages_latest.vim-language-server
-    nodePackages.vscode-langservers-extracted
-    universal-ctags
+    python311
+    ranger
     ripgrep
-    cargo
-    gnumake
+    rofi-wayland
+    scrot
+    spotify
+    swaybg
+    swaylock-effects
+    tmux
+    universal-ctags
+    unzip
     vim-vint    
-    lutris
-    libdrm
-    libratbag
-    piper
     virt-manager
-    firefox
-    xdotool
-    libreoffice-fresh
-    calcurse
-    discord
+    waybar
+    wget
+    wlogout
+    xclip
+    xdg-desktop-portal-hyprland
+    xdotool 
+    zsh
   ];
 
   nix = {
@@ -173,6 +195,13 @@
    	options = "--delete-older-than 7d";
    };
   };
+  nixpkgs.overlays = [
+    (self: super: {
+      waybar = super.waybar.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+      });
+    })
+  ];
 
   system = {
   autoUpgrade.enable = true;
