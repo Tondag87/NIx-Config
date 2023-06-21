@@ -31,25 +31,18 @@
 
   nixpkgs = {
     config = {
-	permittedInsecurePackages = [ "python-2.7.18.6" ];
-	packageOverrides = pkgs: {
-		nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      		inherit pkgs;
-    		};
-	};
-        allowUnfree = true;
+	    permittedInsecurePackages = [ "python-2.7.18.6" ];
+      allowUnfree = true;
     };
   };  
 
   services = {
     xserver = {
-	enable = true;
+	    enable = true;
+      displayManager.startx.enable = true;
     	layout = "us";
     	xkbVariant = "";
-      displayManager.gdm.enable = true;
-      displayManager.gdm.wayland = true;
-      desktopManager.gnome.enable = true;
-    	videoDrivers = [ "amdgpu" "radeon" ];
+      videoDrivers = [ "amdgpu" "radeon" ];
     };
     pipewire = {
     enable = true;
@@ -57,16 +50,11 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     };
-    flatpak = {
-    	enable = true;
-    };
-  };
-  xdg = {
-    portal = {
+    flatpak = { 
       enable = true;
     };
   };
-
+  
   hardware = {
     cpu.amd.updateMicrocode = true;
     enableRedistributableFirmware = true;
@@ -74,18 +62,19 @@
     pulseaudio.enable = false;
     opengl.driSupport = true;
     opengl.driSupport32Bit = true;
+    opengl.setLdLibraryPath = true;
   };
 
   programs = {
    zsh.enable = true;
    steam.enable = true;
    dconf.enable = true;
-   hyprland.enable = true;
-   hyprland.xwayland.enable = true;
   };
-   
-  virtualisation.libvirtd.enable = true;
-
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = with pkgs; [
+    xdg-desktop-portal-wlr
+    xdg-desktop-portal-hyprland
+  ];
   fonts.fonts = with pkgs; [ nerdfonts ];
 
   i18n = {
@@ -114,37 +103,29 @@
   users.users.wick3d = {
     isNormalUser = true;
     description = "Anthony A";
-    extraGroups = [ "networkmanager" "wheel" "libvirtd"];
+    extraGroups = [ "networkmanager" "wheel"];
     shell = pkgs.zsh;
     packages = with pkgs; [];
   };
 
    environment.systemPackages = with pkgs; [
     betterdiscordctl
-    betterlockscreen
     bitwarden
     brave
     btop
     caffeine-ng
-    calcurse
     cargo
     discord
     dunst
     exa
     feh
-    firefox
     gcc
     git
     gnumake
     home-manager
-    killall
-    kitty
     libdrm
     libnotify
-    libratbag
-    libreoffice-fresh
     lutris
-    lxappearance
     neofetch
     neovim
     nodePackages.pyright
@@ -152,11 +133,9 @@
     nodePackages_latest.live-server
     nodePackages_latest.vim-language-server
     nodejs
-    nur.repos.reedrw.picom-next-ibhagwan
     pamixer
     pavucontrol
     pcmanfm
-    piper
     playerctl
     python
     python310Packages.pylsp-mypy
@@ -167,21 +146,17 @@
     ripgrep
     rofi-wayland
     scrot
-    spotify
+    spotify 
     swaybg
-    swaylock-effects
     tmux
     universal-ctags
     unzip
     vim-vint    
-    virt-manager
     waybar
+    wineWowPackages.stable
+    winetricks
     wget
     wlogout
-    xclip
-    xdg-desktop-portal-hyprland
-    xdotool 
-    zsh
   ];
 
   nix = {
@@ -205,7 +180,6 @@
 
   system = {
   autoUpgrade.enable = true;
-  autoUpgrade.channel = "https://nixos.org/channels/nixos-unstable";
   stateVersion = "23.05"; 
   };
 }
